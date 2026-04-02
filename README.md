@@ -13,7 +13,7 @@
 - CSS / Tailwind
 
 ## Live Demo
-(Add your deployed link here)
+https://product-listing-app-khaki.vercel.app/
 
 ## GitHub Repo
 https://github.com/ridhipurwar/product-listing-app
