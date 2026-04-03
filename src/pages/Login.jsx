@@ -6,16 +6,29 @@ function Login() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    const user = JSON.parse(localStorage.getItem("user"));
+    try {
+      const res = await fetch(
+        "https://69d0006da4647a9fc6764075.mockapi.io/users",
+      );
+      const users = await res.json();
 
-    if (user && user.email === email && user.password === password) {
-      localStorage.setItem("isLoggedIn", true);
-      navigate("/");
-    } else {
-      alert("Invalid credentials");
+      const user = users.find(
+        (u) => u.email === email && u.password === password,
+      );
+
+      if (user) {
+        localStorage.setItem("isLoggedIn", true);
+        localStorage.setItem("user", JSON.stringify(user));
+        navigate("/");
+      } else {
+        alert("Invalid credentials");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Login failed");
     }
   };
 

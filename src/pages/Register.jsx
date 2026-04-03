@@ -12,13 +12,46 @@ function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
 
-    localStorage.setItem("user", JSON.stringify(form));
-    alert("Registered Successfully!");
-    navigate("/login");
+    try {
+      // check duplicate email
+      const checkRes = await fetch(
+        "https://69d0006da4647a9fc6764075.mockapi.io/users",
+      );
+      const users = await checkRes.json();
+
+      const exists = users.find((u) => u.email === form.email);
+
+      if (exists) {
+        alert("User already exists!");
+        return;
+      }
+
+      // POST new user
+      const res = await fetch(
+        "https://69d0006da4647a9fc6764075.mockapi.io/users",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(form),
+        },
+      );
+
+      if (!res.ok) throw new Error("Failed");
+
+      alert("Registered Successfully!");
+      navigate("/login");
+    } catch (err) {
+      console.error(err);
+      alert("Registration error");
+    }
   };
+
+  // https://69d0006da4647a9fc6764075.mockapi.io/users
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
