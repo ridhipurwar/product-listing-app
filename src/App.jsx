@@ -1,40 +1,60 @@
-// import { BrowserRouter, Routes, Route } from "react-router-dom";
-// import Home from "./pages/Home";
-// import ProductDetails from "./pages/ProductDetails";
-// import Navbar from "./components/Navbar";
-
-// function App() {
-//   return (
-//     <BrowserRouter>
-//       <Navbar />
-//       <Routes>
-//         <Route path="/" element={<Home />} />
-//         <Route path="/product/:id" element={<ProductDetails />} />
-//       </Routes>
-//     </BrowserRouter>
-//   );
-// }
-
-// export default App;
-
-
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useState } from "react";
+
 import Home from "./pages/Home";
 import ProductDetails from "./pages/ProductDetails";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+
 import Navbar from "./components/Navbar";
+import ProtectedRoute from "./components/ProtectedRoute";
+
+//  Helper component to hide Navbar on login/register
+function Layout({ children, setSearch }) {
+  const location = useLocation();
+
+  const hideNavbar =
+    location.pathname === "/login" || location.pathname === "/register";
+
+  return (
+    <>
+      {!hideNavbar && <Navbar setSearch={setSearch} />}
+      {children}
+    </>
+  );
+}
 
 function App() {
   const [search, setSearch] = useState("");
 
   return (
     <BrowserRouter>
-      <Navbar setSearch={setSearch} />   {/* ✅ pass here */}
+      <Layout setSearch={setSearch}>
+        <Routes>
+          {/*  Public Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-      <Routes>
-        <Route path="/" element={<Home search={search} setSearch={setSearch} />} />
-        <Route path="/product/:id" element={<ProductDetails />} />
-      </Routes>
+          {/*  Protected Routes */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Home search={search} setSearch={setSearch} />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/product/:id"
+            element={
+              <ProtectedRoute>
+                <ProductDetails />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </Layout>
     </BrowserRouter>
   );
 }
